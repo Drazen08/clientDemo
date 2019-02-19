@@ -164,12 +164,16 @@ public class ClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
     /**
      * 初次连接的应答
      *
-     * @param ctx ChannelHandlerContext
+     * @param ctx    ChannelHandlerContext
      * @param result result
      */
     private void startActiveHandler(ChannelHandlerContext ctx, byte[] result) {
-        machineCode = (int) result[1] + (int) result[2];
-        machineIndex = (int) result[3] + (int) result[4];
+        byte[] code = new byte[2];
+        byte[] index = new byte[2];
+        System.arraycopy(result, 1, code, 0, 2);
+        System.arraycopy(result, 3, index, 0, 2);
+        machineCode = ByteArrUtil.byteArrayToInt2pri(code);
+        machineIndex = ByteArrUtil.byteArrayToInt2pri(index);
         active = true;
     }
 
@@ -205,6 +209,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     /**
      * 获取会话
+     *
      * @return
      */
     public ChannelHandlerContext getContext() {
@@ -218,11 +223,6 @@ public class ClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
      */
     private void heartBeatMethod(ChannelHandlerContext ctx) {
         int i = 2;
-//        if (heartBeat == 1) {
-////            i = 2;
-////        } else {
-////            i = 1;
-////        }
 
         byte[] bytes = new byte[14];
         bytes[0] = (byte) 0x0012;
@@ -230,7 +230,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
         // 状态下表
         byte[] statebyte = ByteArrUtil.intToByteArray2(machineIndex);
         System.arraycopy(statebyte, 0, bytes, 1, 2);
-        changeCupNum();
+//        changeCupNum();
         byte[] cupaBytes = ByteArrUtil.intToByteArray2(0);
         byte[] cupbBytes = ByteArrUtil.intToByteArray2(0);
         // 机器状态
@@ -283,12 +283,12 @@ public class ClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
      */
     private void doorderHandler(ChannelHandlerContext ctx, byte[] result) throws InterruptedException {
         System.out.println(HexStringUtil.bytesToHexString(result));
-        int num =2;
+        int num = 2;
         byte[] state = new byte[num];
         for (int i = 0; i < num; i++) {
             state[i] = (byte) 0x0002;
         }
-        byte [] indexs = new byte[4];
+        byte[] indexs = new byte[4];
         indexs[0] = (byte) 0x00;
         indexs[1] = (byte) 0x00;
         indexs[2] = (byte) 0x00;
@@ -309,7 +309,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
         ByteBuf pingMessage = Unpooled.buffer();
         pingMessage.writeBytes(bf.array());
         ctx.writeAndFlush(pingMessage);
-        System.out.println("更新杯子状态！！！！！！！["+ HexStringUtil.bytesToHexString(bf.array()) +"]");
+        System.out.println("更新杯子状态！！！！！！！[" + HexStringUtil.bytesToHexString(bf.array()) + "]");
     }
 
 
