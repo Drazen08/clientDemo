@@ -14,11 +14,13 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter implements
 	private String processId;
 	private String XAUTHUSER;
 	private String XAUTHTENANT;
+	private String orgIdStr;
 
-	public MyStompSessionHandler(String process,String tenant) {
+	public MyStompSessionHandler(String process,String tenant,String user,String orgId) {
 		this.processId = process;
 		this.XAUTHTENANT = tenant;
-		this.XAUTHUSER = tenant;
+		this.XAUTHUSER = user;
+		this.orgIdStr = orgId;
 	}
 
 	private StompSession stompSession;
@@ -71,7 +73,7 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter implements
 		item.setProcessId(this.processId);
 		item.setXAUTHTENANT(XAUTHTENANT);
 		item.setXAUTHUSER(XAUTHUSER);
-		item.setOrgIds(Arrays.asList("123456"));
+		item.setOrgIds(Arrays.asList(orgIdStr));
 		return item;
 	}
 
